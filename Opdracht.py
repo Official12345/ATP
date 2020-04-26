@@ -1,11 +1,6 @@
-from enum import Enum
+from operators import *
 
 Program_state = {"R0": 0, "R1": 0, "R2": 0, "R3": 0, "R4": 0, "R5": 0, "R6": 0, "R7": 0, "R8": 0, "R9": 0, "R10": 0, "R11": 0, "R12": 0, "R13": 0, "R14": 0, "R15": 0, }
-
-class operators(Enum):
-    ADD = lambda a, b : a + b
-    SUB = lambda a, b : a - b
-
 
 class operator_node:
     def __init__(self, operator, storage_register, parameter1, parameter2):
@@ -13,6 +8,19 @@ class operator_node:
         self.storage_register = storage_register
         self.parameter1 = parameter1
         self.parameter2 = parameter2
+
+class jmp_node:
+    def __init__(self, operator, condition, jmp_location):
+        self.operator = operator
+        self.condition = condition
+        self.jmp_location = jmp_location
+
+class jmp_conditional_node:
+    def __init__(self, operator, parameter1, parameter2, jmp_location):
+        self.operator = operator
+        self.parameter1 = parameter1
+        self.parameter2 = parameter2
+        self.jmp_location = jmp_location       
 
 def Read_file_into_lines(filename) -> [[str]]:
     file = open(filename, "r")
@@ -46,6 +54,20 @@ def Line_to_operation(line : [str]) -> operator_node:
         return operator_node(operators.ADD, line[1], Check_reg(line[2]), Check_reg(line[3]))
     elif line[0] == "SUB":
         return operator_node(operators.SUB, line[1], Check_reg(line[2]), Check_reg(line[3]))
+    elif line[0] == "MUL":
+        return operator_node(operators.MUL, line[1], Check_reg(line[2]), Check_reg(line[3]))
+    elif line[0] == "STR":
+        return operator_node(operators.ADD, line[1], Check_reg(line[2]), 0)
+    elif line[0] == "DIV":
+        return operator_node(operators.DIV, line[1], Check_reg(line[2]), Check_reg(line[3]))
+    elif line[0] == "JMPT":
+        return jmp_node(operators.JMPT, line[1], line[2])
+    elif line[0] == "JMPF":
+        return jmp_node(operators.JMPF, line[1], line[2])
+    elif line[0] == "JMPE":
+        return jmp_conditional_node(operators.JMPT, Check_reg(line[1]), Check_reg(line[2]), line[3])
+    elif line[0] == "JMPNE":
+        return jmp_conditional_node(operators.JMPF, Check_reg(line[1]), Check_reg(line[2]), line[3])
     else:
         return None
 
@@ -55,20 +77,51 @@ def execute(operation_node, Program_state) -> dict:
     # print("operation_node storage_register type: value: ", type(operation_node.storage_register), operation_node.storage_register)
     # print("operation_node parameter1 type: value: ", type(operation_node.parameter1), operation_node.parameter1)
     # print("operation_node parameter2 type: value: ", type(operation_node.parameter2), operation_node.parameter2, "\n")
+    print(type(operation_node) == operator_node)
+    print(type(operation_node) == jmp_node)
+    if (isinstance(operation_node, operator_node)):
+        return {operation_node.storage_register : operation_node.operator(Check_reg2(operation_node.parameter1, Program_state), Check_reg2(operation_node.parameter2, Program_state))}
+    elif (isinstance(operation_node, jmp_node)):
+        return operation_node.operator(Check_reg2(operation_node.condition, Program_state), operation_node.jmp_location)
+    elif (isinstance(operation_node, jmp_conditional_node)):
+        condition = Check_reg2(operation_node.parameter1, Program_state) == Check_reg2(operation_node.parameter2, Program_state)
+        return operation_node.operator(condition, operation_node.jmp_location)
+    else:      
+        return None
 
-    return {operation_node.storage_register : operation_node.operator(Check_reg2(operation_node.parameter1, Program_state), Check_reg2(operation_node.parameter2, Program_state))}
+# def run(Program_state : dict, program : list) -> Program_state:
+#     #print("Program_state: ", Program_state)
+#     if len(program) <= 1:
+#         Program_state.update(execute(program[0], Program_state))
+#         return Program_state
+#     else:
+#         head, *tail = program
+#         New_Program_state = Program_state.copy()
+#         New_Program_state.update(execute(head, Program_state))
+#         # print("Program_ state end: ", Program_state)
+#         #Program_state.update({"R15": Program_state.get("R15") + 1})
+#         New_Program_state.update({"R15": Program_state.get("R15") + 1})
+#     return run(New_Program_state, tail)
 
 def run(Program_state : dict, program : list) -> Program_state:
-    #print("Program_state: ", Program_state)
+    New_Program_state = Program_state.copy()
+    print("row_number ", New_Program_state.get("R15"))
     if len(program) <= 1:
-        Program_state.update(execute(program[0], Program_state))
-        return Program_state
-    else:
-        head, *tail = program
-        #head.execute()
-        Program_state.update(execute(head, Program_state))
+        New_Program_state.update(execute(program[0], Program_state))
+        return New_Program_state
+
+    elif New_Program_state.get("R15") >= len(program):
+        return New_Program_state
+
+    else:        
+        current_row_number = Program_state.get("R15")
+        #print("row_number ", current_row_number)
+        current_instruction = program[current_row_number]
+        New_Program_state.update(execute(current_instruction, Program_state))
         # print("Program_ state end: ", Program_state)
-    return run(Program_state, tail)
+        #Program_state.update({"R15": Program_state.get("R15") + 1})
+    New_Program_state.update({"R15": New_Program_state.get("R15") + 1})   
+    return run(New_Program_state, program)
 
 
 #print(Read_file_into_lines("code.txt"))
@@ -87,20 +140,22 @@ def run(Program_state : dict, program : list) -> Program_state:
 # for operation in operations:
 #     operation.execute()
 
-programlines = Read_file_into_lines("code.txt")
-
-program = []
-
 # program.append(Line_to_operation(programlines[0]))
 # program.append(Line_to_operation(programlines[1]))
 # program.append(Line_to_operation(programlines[2]))
 # program.append(Line_to_operation(programlines[3]))
 # program.append(Line_to_operation(programlines[4]))
 
+programlines = Read_file_into_lines("code.txt")
+
+program = []
+
 for i in range(len(programlines)):
     program.append(Line_to_operation(programlines[i]))
 
 output = run(Program_state, program)
 print("Program_output: ", output)
+
+
 #print(Program_state)
 #print("end ", Program_state.get("R5"))

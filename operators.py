@@ -1,4 +1,9 @@
 from enum import Enum
+from nodes import *
+
+def jump_label(target_name, program):
+    index = list(map(lambda item: type(item) == label and item.name == target_name, program)).index(True)
+    return {"R15" : int(index)}
 
 def jumpt(condition, row_number):
     if condition:
@@ -17,4 +22,4 @@ class operators(Enum):
     DIV = lambda a, b : a / b
     JMPT = jumpt
     JMPF = jumpf
-
+    JMPL = jump_label

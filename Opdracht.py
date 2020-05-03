@@ -1,5 +1,6 @@
 from operators import *
 from nodes import *
+from typing import Callable
 
 Program_state = {"R0": 0, "R1": 0, "R2": 0, "R3": 0, "R4": 0, "R5": 0, "R6": 0, "R7": 0, "R8": 0, "R9": 0, "R10": 0, "R11": 0, "R12": 0, "R13": 0, "R14": 0, "R15": 0, }
 
@@ -57,11 +58,12 @@ def Line_to_operation(line : str) -> operator_node:
     elif line[0] == "LABEL":
         return label(line[1])
     elif line[0] == "JMPL":
-        return jmp_label_node(jump_label, line[1])
+        return jmp_label_node(operators.JMPL, line[1])
     else:
         return None
 
 def execute(operation_node : node, Program_state : dict, program : [operator_node]) -> dict:
+    #print("\n",operation_node.operator.value)
     # New_program_state = Program_state.update({operation_node.storage_register : operation_node.operator(operation_node.parameter1, operation_node.parameter2)})
     # return New_program_state
     # print("operation_node storage_register type: value: ", type(operation_node.storage_register), operation_node.storage_register)
@@ -70,15 +72,15 @@ def execute(operation_node : node, Program_state : dict, program : [operator_nod
     # print(type(operation_node) == operator_node)
     # print(type(operation_node) == jmp_node)
     if (isinstance(operation_node, operator_node)):
-        return {operation_node.storage_register : operation_node.operator(Check_reg2(operation_node.parameter1, Program_state), Check_reg2(operation_node.parameter2, Program_state))}
+        return {operation_node.storage_register : operation_node.operator.value(Check_reg2(operation_node.parameter1, Program_state), Check_reg2(operation_node.parameter2, Program_state))}
     elif (isinstance(operation_node, jmp_node)):
-        return operation_node.operator(Check_reg2(operation_node.condition, Program_state), operation_node.jmp_location)
+        return operation_node.operator.value(Check_reg2(operation_node.condition, Program_state), operation_node.jmp_location)
     elif (isinstance(operation_node, jmp_conditional_node)):
         condition = Check_reg2(operation_node.parameter1, Program_state) == Check_reg2(operation_node.parameter2, Program_state)
-        return operation_node.operator(condition, operation_node.jmp_location)
+        return operation_node.operator.value(condition, operation_node.jmp_location)
     elif (isinstance(operation_node, jmp_label_node)):
         # return jump_label(operation_node.name, program)
-        return operation_node.operator(operation_node.name, program)
+        return operation_node.operator.value(operation_node.name, program)
     else:      
         return {}
 
@@ -98,7 +100,7 @@ def execute(operation_node : node, Program_state : dict, program : [operator_nod
 
 def run(Program_state : dict, program : [operator_node]) -> Program_state:
     New_Program_state = Program_state.copy()
-    print("row_number ", New_Program_state.get("R15"))
+    #print("row_number ", New_Program_state.get("R15"))
     if len(program) <= 1:
         New_Program_state.update(execute(program[0], Program_state, program))
         return New_Program_state
@@ -149,25 +151,52 @@ def run(Program_state : dict, program : [operator_node]) -> Program_state:
 # output = run(Program_state, program)
 # print("Program_output: ", output)
 
-#def all_steps(Program_state : dict) -> Program_state:
+def Printing_read_file_into_lines(func: Callable) -> [str]:
+    def inner(Filename):
+        output = func(Filename)
+        print("Lines: ")
+        print(output)
+        return output
+    return inner
 
+def Printing_lines_into_operations(func: Callable) -> [operator_node]:
+    def inner(Lines: [str]):
+        output = func(Lines)
+        print("Nodes: ")
+        for item in output:
+            print(item)
+        return output
+    return inner
 
-output = run(Program_state, Lines_into_operations(Read_file_into_lines("code.txt")))
+def all_steps(Filename, Program_state : dict, Printing_state = "n") -> Program_state:
+    global Read_file_into_lines
+    global Lines_into_operations 
+
+    if Printing_state == "y":
+        Read_file_into_lines = Printing_read_file_into_lines(Read_file_into_lines)
+        Lines_into_operations = Printing_lines_into_operations(Lines_into_operations)
+
+    return run(Program_state, Lines_into_operations(Read_file_into_lines(Filename)))
+
+# output = run(Program_state, Lines_into_operations(Read_file_into_lines("code.txt")))
+# print("Program_output: ", output)
+
+output = all_steps("code.txt", Program_state,"y")
 print("Program_output: ", output)
 
-a = node()
-b = operator_node(1, 2, 3, 4)
-c = jmp_node(1, 2, 3)
-d = jmp_conditional_node(1, 2, 3, 4)
-e = jmp_label_node(1, 2)
-f = label(1)
+# a = node()
+# b = operator_node(1, 2, 3, 4)
+# c = jmp_node(1, 2, 3)
+# d = jmp_conditional_node(1, 2, 3, 4)
+# e = jmp_label_node(1, 2)
+# f = label(1)
 
-print(a)
-print(b)
-print(c)
-print(d)
-print(e)
-print(f)
+# print(a)
+# print(b)
+# print(c)
+# print(d)
+# print(e)
+# print(f)
 
 
 

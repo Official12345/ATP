@@ -1,9 +1,6 @@
 class node:
     pass
 
-    def __str__(self):
-        return '{}'.format(type(self))
-
 class operator_node(node):
     def __init__(self, operator, storage_register, parameter1, parameter2):
         self.operator = operator
@@ -12,7 +9,10 @@ class operator_node(node):
         self.parameter2 = parameter2
 
     def __str__(self):
-        return '{} Operator: {} Storage_register: {} Parameter1: {} Parameter2: {}'.format(type(self), self.operator, self.storage_register, self.parameter1, self.parameter2)
+        return '{} Operator: {} Storage_register: {} Parameter1: {} Parameter2: {}'.format(type(self), self.operator.__name__, self.storage_register, self.parameter1, self.parameter2)
+
+    def __repr(self):
+        return self.__str__()
 
 class jmp_node(node):
     def __init__(self, operator, condition, jmp_location):
@@ -21,7 +21,10 @@ class jmp_node(node):
         self.jmp_location = jmp_location
 
     def __str__(self):
-        return '{} Operator: {} Condition: {} jmp_location: {}'.format(type(self), self.operator, self.condition, self.jmp_location)
+        return '{} Operator: {} Condition: {} jmp_location: {}'.format(type(self), self.operator.__name__, self.condition, self.jmp_location)
+
+    def __repr(self):
+        return self.__str__()
 
 class jmp_conditional_node(node):
     def __init__(self, operator, parameter1, parameter2, jmp_location):
@@ -31,7 +34,10 @@ class jmp_conditional_node(node):
         self.jmp_location = jmp_location   
 
     def __str__(self):
-        return '{} Operator: {} Jmp_location: {} Parameter1: {} Parameter2: {}'.format(type(self), self.operator, self.jmp_location, self.parameter1, self.parameter2)
+        return '{} Operator: {} Jmp_location: {} Parameter1: {} Parameter2: {}'.format(type(self), self.operator.__name__, self.jmp_location, self.parameter1, self.parameter2)
+
+    def __repr(self):
+        return self.__str__()
 
 class jmp_label_node(node):
     def __init__(self, operator, name):
@@ -39,11 +45,17 @@ class jmp_label_node(node):
         self.name = name
 
     def __str__(self):
-        return '{} Operator: {} Storage_register: {}'.format(type(self), self.operator, self.name)
+        return '{} Operator: {} Name: {}'.format(type(self), self.operator.__name__, self.name)
+
+    def __repr(self):
+        return self.__str__()
 
 class label(node):
     def __init__(self, name):
         self.name = name
 
     def __str__(self):
-        return '{} Operator: {}'.format(type(self), self.name)
+        return '{} Name: {}'.format(type(self), self.name)
+
+    def __repr(self):
+        return self.__str__()

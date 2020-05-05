@@ -29,29 +29,29 @@ def Line_to_operation(line : str) -> operator_node:
     line = line.split()
     if line[0] == "\n":
         return None
-    elif line[0] == "ADD":
+    elif line[0] == "IRONMAN":
         return operator_node(operators.ADD, line[1], Check_reg(line[2]), Check_reg(line[3]))
-    elif line[0] == "SUB":
+    elif line[0] == "THOR":
         return operator_node(operators.SUB, line[1], Check_reg(line[2]), Check_reg(line[3]))
-    elif line[0] == "MUL":
+    elif line[0] == "ANTMAN":
         return operator_node(operators.MUL, line[1], Check_reg(line[2]), Check_reg(line[3]))
-    elif line[0] == "STR":
+    elif line[0] == "CAPTAINAMERICA":
         return operator_node(operators.ADD, line[1], Check_reg(line[2]), 0)
-    elif line[0] == "DIV":
+    elif line[0] == "HULK":
         return operator_node(operators.DIV, line[1], Check_reg(line[2]), Check_reg(line[3]))
-    elif line[0] == "JMPT":
+    elif line[0] == "BLACKWIDOW":
         return jmp_node(operators.JMPT, line[1], line[2])
-    elif line[0] == "JMPF":
+    elif line[0] == "HAWKEYE":
         return jmp_node(operators.JMPF, line[1], line[2])
-    elif line[0] == "JMPE":
+    elif line[0] == "SCARLETWITCH":
         return jmp_conditional_node(operators.JMPT, Check_reg(line[1]), Check_reg(line[2]), line[3])
-    elif line[0] == "JMPNE":
+    elif line[0] == "FALCON":
         return jmp_conditional_node(operators.JMPF, Check_reg(line[1]), Check_reg(line[2]), line[3])
-    elif line[0] == "LABEL":
+    elif line[0] == "SPIDERMAN":
         return label(line[1])
-    elif line[0] == "JMPL":
+    elif line[0] == "WARMACHINE":
         return jmp_label_node(operators.JMPL, line[1])
-    elif line[0] == "PRT":
+    elif line[0] == "VISION":
         return print_node(operators.PRINT, Check_reg(line[1]))
     else:
         return None

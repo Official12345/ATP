@@ -3,16 +3,16 @@ from nodes import *
 
 def jump_label(target_name, program):
     index = list(map(lambda item: type(item) == label and item.name == target_name, program)).index(True)
-    return {"R15" : int(index)}
+    return {"PC" : int(index)}
 
 def jumpt(condition, row_number):
     if condition:
-        return {"R15" : int(row_number)-2}
+        return {"PC" : int(row_number)-2}
     return {}
 
 def jumpf(condition, row_number):
     if not condition:
-        return {"R15" : int(row_number)-2}
+        return {"PC" : int(row_number)-2}
     return {}
 
 class operators(Enum):
@@ -23,6 +23,7 @@ class operators(Enum):
     JMPT = jumpt, "JUMP_TRUE"
     JMPF = jumpf, "JUMP_FALSE"
     JMPL = jump_label, "JUMP_LABEL"
+    PRINT = lambda a : print(a), "PRINT"
 
     def __new__(cls, value, name):
         member = object.__new__(cls)

@@ -50,6 +50,17 @@ class jmp_label_node(node):
     def __repr(self):
         return self.__str__()
 
+class print_node(node):
+    def __init__(self, operator, value):
+        self.operator = operator
+        self.value = value
+
+    def __str__(self):
+        return '{} Operator: {} Value: {}'.format(type(self), self.operator.__name__, self.value)
+
+    def __repr(self):
+        return self.__str__()
+
 class label(node):
     def __init__(self, name):
         self.name = name

@@ -120,7 +120,7 @@ def Printing_read_file_into_lines(func: Callable) -> [str]:
     def inner(Filename):
         output = func(Filename)
         print("Lines: ")
-        print(output)
+        list(map(print, output))
         return output
     return inner
 
@@ -146,5 +146,5 @@ def all_steps(Filename, Program_state : dict, Printing_state = 0) -> Program_sta
 
     return run(Program_state, Lines_into_operations(Read_file_into_lines(Filename)))
 
-output = all_steps("countermachine.txt", Program_state, 0)
+output = all_steps("countermachine.txt", Program_state, 1)
 print("Program_output: ", output)

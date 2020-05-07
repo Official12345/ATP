@@ -2,6 +2,14 @@
 AVENGERS ASSEMBLER! is a programming themed after the avengers MCU and cortex-m0 assembler.<br>
 Like they say in dutch "Een beetje van jezelf en een beetje van maggi.".
 
+## Should-haves
+### Creating your own language
+My language differs from cortex-m0 assembler in too many ways to not be called a new language. <br>
+You can declare your own variables. You also have more comparison operators than normal cortex-m0 assembler offers, And last but not least the amazing syntax this language uses ofcourse.
+
+### Advanced language features
+This language offers many operators that makes using it more flexable than using just a barebones turing-complete language. This includes multiple ways to jump in the program, aswell as most comparison operators you would want to use in any programmingl language.
+
 ## Variables
 Like assembler, this language has 16 base registers, the 16th(R15) being used for the Program Counter.<br>
 But unlike traditional assembler, AVENGERS ASSEMBLER! gives you the ability to declare your own variables. You can simply do this by using IRONMAN, THOR, ANTMAN, HULK OR CAPTAINAMERICA use a new name as the storage variable.

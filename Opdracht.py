@@ -4,12 +4,34 @@ from typing import Callable, Union
 
 Program_state = {"R0": 0, "R1": 0, "R2": 0, "R3": 0, "R4": 0, "R5": 0, "R6": 0, "R7": 0, "R8": 0, "R9": 0, "R10": 0, "R11": 0, "R12": 0, "R13": 0, "R14": 0, "PC": 0, }
 
+#This is the decorator for the read_file_into_lines function
+#It enables the function to print
+def Printing_read_file_into_lines(func: Callable) -> Callable:
+    def inner(Filename) -> [str]:
+        output = func(Filename)
+        print("Lines: ")
+        list(map(print, output))
+        return output
+    return inner
+
+#This is the decorator for the lines_into_operations function
+#It enables the function to print
+def Printing_lines_into_operations(func: Callable) -> Callable:
+    def inner(Lines: [str]) -> [operator_node]:
+        output = func(Lines)
+        print("Nodes: ")
+        list(map(print, output))
+        return output
+    return inner
+
 #This function reads the programfile and returns a list of strings(one per line)
+@Printing_read_file_into_lines
 def Read_file_into_lines(filename) -> [str]:
     file = open(filename, "r")
     return file.read().splitlines()
 
 #This funtion turns a list of strings into a list of operator_node
+@Printing_lines_into_operations
 def Lines_into_operations(Lines : [str]) -> [operator_node]:
     return list(map(Line_to_operation, Lines))
 
@@ -114,35 +136,11 @@ def run(Program_state : dict, program : [operator_node]) -> Program_state:
     New_Program_state.update({"PC": New_Program_state.get("PC") + 1})   
     return run(New_Program_state, program)
 
-#This is the decorator for the read_file_into_lines function
-#It enables the function to print
-def Printing_read_file_into_lines(func: Callable) -> [str]:
-    def inner(Filename):
-        output = func(Filename)
-        print("Lines: ")
-        list(map(print, output))
-        return output
-    return inner
 
-#This is the decorator for the lines_into_operations function
-#It enables the function to print
-def Printing_lines_into_operations(func: Callable) -> [operator_node]:
-    def inner(Lines: [str]):
-        output = func(Lines)
-        print("Nodes: ")
-        list(map(print, output))
-        return output
-    return inner
 
 #This is the main function
 #It contains the lexing, parsing and execution steps
 def all_steps(Filename, Program_state : dict, Printing_state = 0) -> Program_state:
-    global Read_file_into_lines
-    global Lines_into_operations 
-
-    if Printing_state:
-        Read_file_into_lines = Printing_read_file_into_lines(Read_file_into_lines)
-        Lines_into_operations = Printing_lines_into_operations(Lines_into_operations)
 
     return run(Program_state, Lines_into_operations(Read_file_into_lines(Filename)))
 

@@ -1,16 +1,16 @@
 from enum import Enum
 from nodes import *
 
-def jump_label(target_name, program):
+def jump_label(target_name: str , program: [operator_node]) -> dict:
     index = list(map(lambda item: type(item) == label and item.name == target_name, program)).index(True)
     return {"PC" : int(index)}
 
-def jumpt(condition, row_number):
+def jumpt(condition: bool, row_number: int) -> dict:
     if condition:
         return {"PC" : int(row_number)-2}
     return {}
 
-def jumpf(condition, row_number):
+def jumpf(condition: bool, row_number: int) -> dict:
     if not condition:
         return {"PC" : int(row_number)-2}
     return {}
